@@ -9,6 +9,9 @@ public class Main extends JPanel {
     private GameEngine gameEngine;
     private Playground playground;
     private ArrayList<Sprite> environment;
+    private ArrayList<Enemy> enemies;
+    private int currentLevel = 1; // Variable pour suivre le niveau actuel
+    private String levelPath = "data/level1.txt"; // Chemin initial du niveau
 
     // Variables pour calculer les FPS
     private long lastTime = System.currentTimeMillis();  // Pour mesurer le temps
@@ -25,6 +28,12 @@ public class Main extends JPanel {
             hero = new DynamicSprite(200, 300, ImageIO.read(new File("img/heroTileSheetLowRes.png")), 48, 50);
             gameEngine = new GameEngine(hero, environment);
 
+            // Initialize enemies
+            enemies = new ArrayList<>();
+            Image enemyImage = ImageIO.read(new File("img/enemy.png"));
+            enemies.add(new Enemy(400, 100, enemyImage, 48, 50)); // enemy1 and its position
+            enemies.add(new Enemy(800, 500, enemyImage, 48, 50)); // enemy2 and its position
+
             // Add KeyListener to capture keyboard events
             this.addKeyListener(gameEngine);
             this.setFocusable(true); // Allow panel to capture key events
@@ -32,10 +41,23 @@ public class Main extends JPanel {
             e.printStackTrace();
         }
     }
-    public void loadNextLevel(String levelPath) {
+    public void loadNextLevel() {
+        // Déterminer le niveau suivant et charger le bon fichier
+        switch (currentLevel) {
+            case 1:
+                levelPath = "data/level2.txt";
+                break;
+            case 2:
+                levelPath = "data/level3.txt";
+                break;
+            default:
+                return; // Pas de niveau suivant
+        }
+
+        currentLevel++; // Incrémenter le niveau actuel
         try {
-            playground = new Playground(levelPath); // Charger le nouveau niveau
-            environment = playground.getEnvironment(); // Mettre à jour l'environnement
+            playground = new Playground(levelPath);
+            environment = playground.getEnvironment();
             hero.setX(200); // Réinitialiser la position du héros
             hero.setY(300);
         } catch (Exception e) {
@@ -64,6 +86,10 @@ public class Main extends JPanel {
             g.drawRect((int) hero.getX(), (int) hero.getY() - 10, barWidth, 5);      // Outline of health bar
         }
 
+        // Draw enemies
+        for (Enemy enemy : enemies) {
+            enemy.draw(g);
+        }
         displayFPS(g);
     }
 
@@ -90,7 +116,7 @@ public class Main extends JPanel {
         JFrame frame = new JFrame("Java Game Test");
         Main panel = new Main();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 800);
+        frame.setSize(1920, 1080);
         frame.add(panel);
         frame.setVisible(true);
 
@@ -98,6 +124,10 @@ public class Main extends JPanel {
         Timer timer = new Timer(16, e -> {
             panel.repaint();       // Redraw the panel
             panel.gameEngine.update();  // Update game logic
+
+            for (Enemy enemy : panel.enemies) {
+                enemy.followHero(panel.hero, panel.environment);
+            }
         });
         timer.start();
     }

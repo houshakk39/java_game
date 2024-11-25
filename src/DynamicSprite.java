@@ -3,14 +3,14 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class DynamicSprite extends Sprite {
-    private Direction direction;
+    protected Direction direction;
     private double speed;
     private int maxHealth = 100;
     private int currentHealth = 100;
-    private int tileWidth = 48;
-    private int tileHeight = 50;
-    private int currentTileX = 0;
-    private int currentTileY = 0;
+    protected int tileWidth = 48;
+    protected int tileHeight = 50;
+    protected int currentTileX = 0;
+    protected int currentTileY = 0;
     private int health;
 
     public DynamicSprite(double x, double y, Image image, double width, double height) {

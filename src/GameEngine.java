@@ -21,16 +21,23 @@ public class GameEngine implements KeyListener {
             // Vérifiez la collision avec les pièges
             for (Sprite sprite : environment) {
                 if (sprite instanceof TrapSprite && hero.getBounds().intersects(sprite.getBounds())) {
-                    hero.takeDamage(1);  // Réduire la santé de 1 lorsqu'il entre en collision avec un piège
+                    hero.takeDamage(1); // Réduire la santé de 1 lorsqu'il entre en collision avec un piège
                     if (!hero.isAlive()) {
-                        isGameOver = true;  // Le jeu est terminé si le héros meurt
+                        isGameOver = true; // Le jeu est terminé si le héros meurt
                         // Forcer un redessin du jeu pour afficher "Game Over"
                         repaint();
                     }
                 }
             }
+
+            // Vérifiez si la santé actuelle est à 0
+            if (hero.getCurrentHealth() <= 0) {
+                isGameOver = true; // Le jeu est terminé si la santé atteint 0
+                repaint(); // Forcer un redessin pour afficher "Game Over"
+            }
         }
     }
+
 
     // Affichez "Game Over" et le bouton Retry si le jeu est terminé
     public void draw(Graphics g) {
@@ -109,7 +116,7 @@ public class GameEngine implements KeyListener {
                     hero.setSpeed(5.0);
                     break;
                 case KeyEvent.VK_F:
-                    hero.setSpeed(10.0); // Double la vitesse si "F" est maintenu
+                    hero.setSpeed(20.0); // augmente la vitesse si maintenue
                     break;
             }
         }
